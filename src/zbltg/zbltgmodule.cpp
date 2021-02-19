@@ -1,34 +1,90 @@
-// Copyright (c) 2019 The PIVX developers
+// Copyright (c) 2019-2020 The PIVX developers
 // Distributed under the MIT software license, see the accompanying
 // file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 #include "zbltg/zbltgmodule.h"
-#include "zbltgchain.h"
+
+#include "hash.h"
 #include "libzerocoin/Commitment.h"
 #include "libzerocoin/Coin.h"
-#include "hash.h"
-#include "main.h"
-#include "iostream"
+#include "validation.h"
+#include "zbltgchain.h"
 
-bool PublicCoinSpend::Verify(const libzerocoin::Accumulator& a, bool verifyParams) const {
-    return validate();
+template <typename Stream>
+PublicCoinSpend::PublicCoinSpend(libzerocoin::ZerocoinParams* params, Stream& strm): pubCoin(params) {
+    strm >> *this;
+    this->spendType = libzerocoin::SpendType::SPEND;
+
+    if (this->version < PUBSPEND_SCHNORR) {
+        // coinVersion is serialized only from v4 spends
+        this->coinVersion = libzerocoin::ExtractVersionFromSerial(this->coinSerialNumber);
+
+    } else {
+        // from v4 spends, serialNumber is not serialized for v2 coins anymore.
+        // in this case, we extract it from the coin public key
+        if (this->coinVersion >= libzerocoin::PrivateCoin::PUBKEY_VERSION)
+            this->coinSerialNumber = libzerocoin::ExtractSerialFromPubKey(this->pubkey);
+
+    }
+
 }
 
-bool PublicCoinSpend::validate() const {
-    libzerocoin::ZerocoinParams* params = Params().Zerocoin_Params(false);
-    // Check that it opens to the input values
-    libzerocoin::Commitment commitment(
-            &params->coinCommitmentGroup, getCoinSerialNumber(), randomness);
+bool PublicCoinSpend::Verify() const {
+    bool fUseV1Params = getCoinVersion() < libzerocoin::PrivateCoin::PUBKEY_VERSION;
+    if (version < PUBSPEND_SCHNORR) {
+        // spend contains the randomness of the coin
+        if (fUseV1Params) {
+            // Only v2+ coins can publish the randomness
+            std::string errMsg = strprintf("PublicCoinSpend version %d with coin version 1 not allowed. "
+                                           "Minimum spend version required: %d", version, PUBSPEND_SCHNORR);
+            return error("%s: %s", __func__, errMsg);
+        }
 
-    if (commitment.getCommitmentValue() != pubCoin.getValue()){
-        return error("%s: commitments values are not equal", __func__);
+        // Check that the coin is a commitment to serial and randomness.
+        libzerocoin::ZerocoinParams* params = Params().GetConsensus().Zerocoin_Params(false);
+        libzerocoin::Commitment comm(&params->coinCommitmentGroup, getCoinSerialNumber(), randomness);
+        if (comm.getCommitmentValue() != pubCoin.getValue()) {
+            return error("%s: commitments values are not equal", __func__);
+        }
+
+    } else {
+        // for v1 coins, double check that the serialized coin serial is indeed a v1 serial
+        if (coinVersion < libzerocoin::PrivateCoin::PUBKEY_VERSION &&
+            libzerocoin::ExtractVersionFromSerial(this->coinSerialNumber) != coinVersion) {
+            return error("%s: invalid coin version", __func__);
+        }
+
+        // spend contains a shnorr signature of ptxHash with the randomness of the coin
+        libzerocoin::ZerocoinParams* params = Params().GetConsensus().Zerocoin_Params(fUseV1Params);
+        if (!schnorrSig.Verify(params, getCoinSerialNumber(), pubCoin.getValue(), getTxOutHash())) {
+            return error("%s: schnorr signature does not verify", __func__);
+        }
+
     }
+
     // Now check that the signature validates with the serial
     if (!HasValidSignature()) {
         return error("%s: signature invalid", __func__);;
     }
+
     return true;
 }
+
+bool PublicCoinSpend::HasValidSignature() const
+{
+    if (coinVersion < libzerocoin::PrivateCoin::PUBKEY_VERSION)
+        return true;
+
+    // for spend version 3 we must check that the provided pubkey and serial number match
+    if (version < PUBSPEND_SCHNORR) {
+        CBigNum extractedSerial = libzerocoin::ExtractSerialFromPubKey(this->pubkey);
+        if (extractedSerial != this->coinSerialNumber)
+            return error("%s: hashedpubkey is not equal to the serial!", __func__);
+    }
+
+    return pubkey.Verify(signatureHash(), vchSig);
+}
+
 
 const uint256 PublicCoinSpend::signatureHash() const
 {
@@ -39,46 +95,20 @@ const uint256 PublicCoinSpend::signatureHash() const
 
 namespace ZBLTGModule {
 
-    bool createInput(CTxIn &in, CZerocoinMint &mint, uint256 hashTxOut) {
-        libzerocoin::ZerocoinParams *params = Params().Zerocoin_Params(false);
-        uint8_t nVersion = mint.GetVersion();
-        if (nVersion < libzerocoin::PrivateCoin::PUBKEY_VERSION) {
-            // No v1 serials accepted anymore.
-            return error("%s: failed to set zBLTG privkey mint version=%d\n", __func__, nVersion);
-        }
-
-        CKey key;
-        if (!mint.GetKeyPair(key))
-            return error("%s: failed to set zBLTG privkey mint version=%d\n", __func__, nVersion);
-
-        PublicCoinSpend spend(params, mint.GetSerialNumber(), mint.GetRandomness(), key.GetPubKey());
-        spend.setTxOutHash(hashTxOut);
-        spend.outputIndex = mint.GetOutputIndex();
-        spend.txHash = mint.GetTxHash();
-        spend.setDenom(mint.GetDenomination());
-
-        std::vector<unsigned char> vchSig;
-        if (!key.Sign(spend.signatureHash(), vchSig))
-            throw std::runtime_error("ZBLTGModule failed to sign signatureHash\n");
-
-        spend.setVchSig(vchSig);
-
-        CDataStream ser(SER_NETWORK, PROTOCOL_VERSION);
-        ser << spend;
-
-        std::vector<unsigned char> data(ser.begin(), ser.end());
-        CScript scriptSigIn = CScript() << OP_ZEROCOINPUBLICSPEND << data.size();
-        scriptSigIn.insert(scriptSigIn.end(), data.begin(), data.end());
-        in = CTxIn(mint.GetTxHash(), mint.GetOutputIndex(), scriptSigIn, mint.GetDenomination());
-        in.nSequence = mint.GetDenomination();
-        return true;
+    // Return stream of CoinSpend from tx input scriptsig
+    CDataStream ScriptSigToSerializedSpend(const CScript& scriptSig)
+    {
+        std::vector<char, zero_after_free_allocator<char> > data;
+        // skip opcode and data-len
+        uint8_t byteskip = ((uint8_t) scriptSig[1] + 2);
+        data.insert(data.end(), scriptSig.begin() + byteskip, scriptSig.end());
+        return CDataStream(data, SER_NETWORK, PROTOCOL_VERSION);
     }
 
-    PublicCoinSpend parseCoinSpend(const CTxIn &in) {
-        std::vector<char, zero_after_free_allocator<char> > data;
-        data.insert(data.end(), in.scriptSig.begin() + 4, in.scriptSig.end());
-        CDataStream serializedCoinSpend(data, SER_NETWORK, PROTOCOL_VERSION);
-        libzerocoin::ZerocoinParams *params = Params().Zerocoin_Params(false);
+    PublicCoinSpend parseCoinSpend(const CTxIn &in)
+    {
+        libzerocoin::ZerocoinParams *params = Params().GetConsensus().Zerocoin_Params(false);
+        CDataStream serializedCoinSpend = ScriptSigToSerializedSpend(in.scriptSig);
         return PublicCoinSpend(params, serializedCoinSpend);
     }
 
@@ -112,8 +142,7 @@ namespace ZBLTGModule {
                 libzerocoin::IntToZerocoinDenomination(in.nSequence)) != prevOut.nValue) {
             return error("PublicCoinSpend validateInput :: input nSequence different to prevout value");
         }
-
-        return publicSpend.validate();
+        return publicSpend.Verify();
     }
 
     bool ParseZerocoinPublicSpend(const CTxIn &txIn, const CTransaction& tx, CValidationState& state, PublicCoinSpend& publicSpend)

@@ -240,8 +240,8 @@ in-tree. Example use:
 
 ```shell
 $ valgrind --suppressions=contrib/valgrind.supp src/test/test_bltg
-$ valgrind --suppressions=contrib/valgrind.supp --leak-check=full \
-      --show-leak-kinds=all src/test/test_bltg --log_level=test_suite
+ valgrind --suppressions=contrib/valgrind.supp --leak-check=full \
+     --show-leak-kinds=all src/test/test_bltg --log_level=test_suite
 $ valgrind -v --leak-check=full src/bltgd -printtoconsole
 ```
 
@@ -673,7 +673,11 @@ Current subtrees include:
   - **Note**: Follow the instructions in [Upgrading LevelDB](#upgrading-leveldb) when
     merging upstream changes to the LevelDB subtree.
 
-- src/libsecp256k1
+- src/crc32c
+  - Used by leveldb for hardware acceleration of CRC32C checksums for data integrity.
+  - Upstream at https://github.com/google/crc32c ; Maintained by Google.
+
+- src/secp256k1
   - Upstream at https://github.com/bitcoin-core/secp256k1/ ; actively maintained by Core contributors.
 
 - src/univalue

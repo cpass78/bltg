@@ -4,21 +4,21 @@
 # file COPYING or http://www.opensource.org/licenses/mit-license.php.
 
 
-from test_framework.test_framework import BitcoinTestFramework
-from test_framework.util import *
-import urllib.parse
+from test_framework.test_framework import PivxTestFramework
+from test_framework.util import (
+    assert_equal,
+    connect_nodes,
+    Decimal,
+    disconnect_nodes,
+    sync_blocks,
+    sync_mempools
+)
 
-class AbandonConflictTest(BitcoinTestFramework):
-    def __init__(self):
-        super().__init__()
+class AbandonConflictTest(PivxTestFramework):
+    def set_test_params(self):
         self.num_nodes = 2
-        self.setup_clean_chain = False
-
-    def setup_network(self):
-        self.nodes = []
-        self.nodes.append(start_node(0, self.options.tmpdir, ["-debug","-logtimemicros","-minrelaytxfee=0.00001"]))
-        self.nodes.append(start_node(1, self.options.tmpdir, ["-debug","-logtimemicros"]))
-        connect_nodes(self.nodes[0], 1)
+        self.setup_clean_chain = True
+        self.extra_args = [["-minrelaytxfee=0.00001"],[]]
 
     def run_test(self):
         self.nodes[1].generate(100)

@@ -34,6 +34,7 @@ EXCLUDE_DIRS = [
     "src/leveldb/",
     "src/secp256k1/",
     "src/univalue/",
+    "src/crc32c",
 ]
 
 INCLUDE = ['*.h', '*.cpp', '*.cc', '*.c', '*.py']
@@ -122,6 +123,9 @@ EXPECTED_HOLDER_NAMES = [
     "The PIVX developers\n",
     "The BLTG developers\n",
     "The PPCoin developers\n",
+    "The NovaCoin Developers",
+    "The BlackCoin Developers\n",
+    "The Blackcoin More developers\n",
 ]
 
 DOMINANT_STYLE_COMPILED = {}

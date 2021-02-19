@@ -51,14 +51,14 @@ public:
      */
     static QString getDefaultDataDirectory();
 
-signals:
+Q_SIGNALS:
     void requestCheck();
     void stopThread();
 
-public slots:
+public Q_SLOTS:
     void setStatus(int status, const QString& message, quint64 bytesAvailable);
 
-private slots:
+private Q_SLOTS:
     void on_dataDirectory_textChanged(const QString& arg1);
     void on_ellipsisButton_clicked();
     void on_dataDirDefault_clicked();
@@ -74,6 +74,7 @@ private:
     void startThread();
     void checkPath(const QString& dataDir);
     QString getPathToCheck();
+    void updateDataDirStatus(bool enabled);
 
     friend class FreespaceChecker;
 };

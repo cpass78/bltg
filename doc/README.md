@@ -55,7 +55,7 @@ The Bltg repo's [root README](https://github.com/Block-Logic-Technology-Group/bl
 - [Dnsseed Policy](dnsseed-policy.md)
 
 ### Resources
-* Join the [BLTG Discord](https://discord.gg/RggfhTH).
+* Join the [BLTG Discord](https://discord.block-logic.com).
 
 ### Miscellaneous
 - [Assets Attribution](assets-attribution.md)

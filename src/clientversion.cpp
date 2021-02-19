@@ -92,7 +92,12 @@ std::string FormatFullVersion()
     return CLIENT_BUILD;
 }
 
-/** 
+std::string FormatVersionFriendly()
+{
+    return FormatVersion(CLIENT_VERSION);
+}
+
+/**
  * Format the subversion field according to BIP 14 spec (https://github.com/bitcoin/bips/blob/master/bip-0014.mediawiki) 
  */
 std::string FormatSubVersion(const std::string& name, int nClientVersion, const std::vector<std::string>& comments)

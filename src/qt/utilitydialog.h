@@ -9,8 +9,8 @@
 
 #include <QDialog>
 #include <QObject>
+#include <QMainWindow>
 
-class BitcoinGUI;
 class ClientModel;
 
 namespace Ui
@@ -33,9 +33,6 @@ public:
 private:
     Ui::HelpMessageDialog* ui;
     QString text;
-
-private slots:
-    void on_okButton_accepted();
 };
 
 
@@ -45,8 +42,8 @@ class ShutdownWindow : public QWidget
     Q_OBJECT
 
 public:
-    ShutdownWindow(QWidget* parent = 0, Qt::WindowFlags f = 0);
-    static void showShutdownWindow(BitcoinGUI* window);
+    ShutdownWindow(QWidget* parent = nullptr, Qt::WindowFlags f = Qt::Widget);
+    static void showShutdownWindow(QMainWindow* window);
 
 protected:
     void closeEvent(QCloseEvent* event);

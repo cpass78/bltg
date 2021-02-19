@@ -53,7 +53,8 @@ The directory can be different of course, but (both) port numbers should be equa
 your bltgd's P2P listen port (17127 by default).
 
 	-externalip=X   You can tell bltg about its publicly reachable address using
-	                this option, and this can be a .onion address. Given the above
+	                this option, and this can be a v2 .onion address (v3 .onion
+	                addresses are not supported by the BLTG network). Given the above
 	                configuration, you can find your .onion address in
 	                /var/lib/tor/bltg-service/hostname. For connections
 	                coming from unroutable addresses (such as 127.0.0.1, where the
