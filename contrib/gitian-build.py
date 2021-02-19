@@ -110,7 +110,7 @@ def setup_repos():
     if not os.path.isdir('gitian-builder'):
         subprocess.check_call(['git', 'clone', 'https://github.com/devrandom/gitian-builder.git'])
     if not os.path.isdir('bltg'):
-        subprocess.check_call(['git', 'clone', 'https://github.com/Block-Logic-Technology-Group/bltg.git'])
+        subprocess.check_call(['git', 'clone', 'https://github.com/cpass78/bltg'])
     os.chdir('gitian-builder')
     make_image_prog = ['bin/make-base-vm', '--suite', 'bionic', '--arch', 'amd64']
     if args.docker:
@@ -151,20 +151,20 @@ def build():
     if args.linux:
         print('\nCompiling ' + args.version + ' Linux')
         subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'bltg='+args.commit, '--url', 'bltg='+args.url, '../bltg/contrib/gitian-descriptors/gitian-linux.yml'])
-        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-linux', '--destination', '../gitian.sigs/', '../bltg/contrib/gitian-descriptors/gitian-linux.yml'])
+        # subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-linux', '--destination', '../gitian.sigs/', '../bltg/contrib/gitian-descriptors/gitian-linux.yml'])
         subprocess.check_call('mv build/out/bltg-*.tar.gz build/out/src/bltg-*.tar.gz ../bltg-binaries/'+args.version, shell=True)
 
     if args.windows:
         print('\nCompiling ' + args.version + ' Windows')
         subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'bltg='+args.commit, '--url', 'bltg='+args.url, '../bltg/contrib/gitian-descriptors/gitian-win.yml'])
-        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-win-unsigned', '--destination', '../gitian.sigs/', '../bltg/contrib/gitian-descriptors/gitian-win.yml'])
+        # subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-win-unsigned', '--destination', '../gitian.sigs/', '../bltg/contrib/gitian-descriptors/gitian-win.yml'])
         subprocess.check_call('mv build/out/bltg-*-win-unsigned.tar.gz inputs/', shell=True)
         subprocess.check_call('mv build/out/bltg-*.zip build/out/bltg-*.exe build/out/src/bltg-*.tar.gz ../bltg-binaries/'+args.version, shell=True)
 
     if args.macos:
         print('\nCompiling ' + args.version + ' MacOS')
         subprocess.check_call(['bin/gbuild', '-j', args.jobs, '-m', args.memory, '--commit', 'bltg='+args.commit, '--url', 'bltg='+args.url, '../bltg/contrib/gitian-descriptors/gitian-osx.yml'])
-        subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-osx-unsigned', '--destination', '../gitian.sigs/', '../bltg/contrib/gitian-descriptors/gitian-osx.yml'])
+        # subprocess.check_call(['bin/gsign', '-p', args.sign_prog, '--signer', args.signer, '--release', args.version+'-osx-unsigned', '--destination', '../gitian.sigs/', '../bltg/contrib/gitian-descriptors/gitian-osx.yml'])
         subprocess.check_call('mv build/out/bltg-*-osx-unsigned.tar.gz inputs/', shell=True)
         subprocess.check_call('mv build/out/bltg-*.tar.gz build/out/bltg-*.dmg build/out/src/bltg-*.tar.gz ../bltg-binaries/'+args.version, shell=True)
 
@@ -258,7 +258,7 @@ def main():
     parser = argparse.ArgumentParser(description='Script for running full Gitian builds.')
     parser.add_argument('-c', '--commit', action='store_true', dest='commit', help='Indicate that the version argument is for a commit or branch')
     parser.add_argument('-p', '--pull', action='store_true', dest='pull', help='Indicate that the version argument is the number of a github repository pull request')
-    parser.add_argument('-u', '--url', dest='url', default='https://github.com/Block-Logic-Technology-Group/bltg', help='Specify the URL of the repository. Default is %(default)s')
+    parser.add_argument('-u', '--url', dest='url', default='https://github.com/cpass78/bltg', help='Specify the URL of the repository. Default is %(default)s')
     parser.add_argument('-v', '--verify', action='store_true', dest='verify', help='Verify the Gitian build')
     parser.add_argument('-b', '--build', action='store_true', dest='build', help='Do a Gitian build')
     parser.add_argument('-s', '--sign', action='store_true', dest='sign', help='Make signed binaries for Windows and MacOS')
@@ -362,11 +362,11 @@ def main():
     os.chdir('bltg')
     if args.pull:
         subprocess.check_call(['git', 'fetch', args.url, 'refs/pull/'+args.version+'/merge'])
-        if not os.path.isdir('../gitian-builder/inputs/bltg'):
-            os.makedirs('../gitian-builder/inputs/bltg')
-        os.chdir('../gitian-builder/inputs/bltg')
-        if not os.path.isdir('.git'):
-            subprocess.check_call(['git', 'init'])
+        # if not os.path.isdir('../gitian-builder/inputs/bltg'):
+        #     os.makedirs('../gitian-builder/inputs/bltg')
+        # os.chdir('../gitian-builder/inputs/bltg')
+        # if not os.path.isdir('.git'):
+        subprocess.check_call(['git', 'init'])
         subprocess.check_call(['git', 'fetch', args.url, 'refs/pull/'+args.version+'/merge'])
         args.commit = subprocess.check_output(['git', 'show', '-s', '--format=%H', 'FETCH_HEAD'], universal_newlines=True, encoding='utf8').strip()
         args.version = 'pull-' + args.version
