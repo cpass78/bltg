@@ -42,7 +42,7 @@ const struct NUInfo NetworkUpgradeInfo[Consensus::MAX_NETWORK_UPGRADES] = {
                 /*.strInfo =*/ "activation of zerocoin public spends (spend v3)",
         },
         {
-                /*.strName =*/ "BLTG_v3.4",
+                /*.strName =*/ "BLTG_v4.0",
                 /*.strInfo =*/ "new 256-bit stake modifier - start block v6",
         },
         {

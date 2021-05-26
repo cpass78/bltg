@@ -284,6 +284,9 @@ public:
     const CBlockIndex* GetAncestor(int height) const;
 };
 
+/** Find the forking point between two chain tips. */
+const CBlockIndex* LastCommonAncestor(const CBlockIndex* pa, const CBlockIndex* pb);
+
 /** Used to marshal pointers into hashes for db storage. */
 
 // New serialization introduced with 4.0.99
@@ -319,6 +322,7 @@ public:
         READWRITE(VARINT(nTx));
         if (nStatus & (BLOCK_HAVE_DATA | BLOCK_HAVE_UNDO))
             READWRITE(VARINT(nFile));
+            READWRITE(VARINT(nFile));
         if (nStatus & BLOCK_HAVE_DATA)
             READWRITE(VARINT(nDataPos));
         if (nStatus & BLOCK_HAVE_UNDO)
@@ -334,11 +338,11 @@ public:
             READWRITE(nTime);
             READWRITE(nBits);
             READWRITE(nNonce);
-            if(this->nVersion > 3 && this->nVersion < 7)
+            if(this->nVersion > 3 && this->nVersion < 4)
                 READWRITE(nAccumulatorCheckpoint);
 
             // Sapling blocks
-            if (this->nVersion >= 8) {
+            if (this->nVersion >= 5) {
                 READWRITE(hashFinalSaplingRoot);
                 READWRITE(nSaplingValue);
             }
@@ -358,7 +362,7 @@ public:
             READWRITE(nNonce);
             if(this->nVersion > 3) {
                 READWRITE(mapZerocoinSupply);
-                if(this->nVersion < 7) READWRITE(nAccumulatorCheckpoint);
+                if(this->nVersion < 4) READWRITE(nAccumulatorCheckpoint);
             }
 
         } else if (ser_action.ForRead()) {
@@ -411,9 +415,9 @@ public:
         block.nTime = nTime;
         block.nBits = nBits;
         block.nNonce = nNonce;
-        if (nVersion > 3 && nVersion < 7)
+        if (nVersion > 3 && nVersion < 5)
             block.nAccumulatorCheckpoint = nAccumulatorCheckpoint;
-        if (nVersion >= 8)
+        if (nVersion >= 5)
             block.hashFinalSaplingRoot = hashFinalSaplingRoot;
         return block.GetHash();
     }
@@ -487,7 +491,7 @@ public:
             READWRITE(nNonce);
             if(this->nVersion > 3) {
                 READWRITE(mapZerocoinSupply);
-                if(this->nVersion < 7) READWRITE(nAccumulatorCheckpoint);
+                if(this->nVersion < 5) READWRITE(nAccumulatorCheckpoint);
             }
 
         } else {

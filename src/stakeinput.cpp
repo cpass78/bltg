@@ -6,7 +6,6 @@
 
 #include "chain.h"
 #include "txdb.h"
-#include "zbltg/deterministicmint.h"
 #include "wallet/wallet.h"
 
 CBltgStake* CBltgStake::NewBltgStake(const CTxIn& txin)
@@ -18,7 +17,7 @@ CBltgStake* CBltgStake::NewBltgStake(const CTxIn& txin)
 
     // Find the previous transaction in database
     uint256 hashBlock;
-    CTransaction txPrev;
+    CTransactionRef txPrev;
     if (!GetTransaction(txin.prevout.hash, txPrev, hashBlock, true)) {
         error("%s : INFO: read txPrev failed, tx id prev: %s", __func__, txin.prevout.hash.GetHex());
         return nullptr;
@@ -36,7 +35,7 @@ CBltgStake* CBltgStake::NewBltgStake(const CTxIn& txin)
         return nullptr;
     }
 
-    return new CBltgStake(txPrev.vout[txin.prevout.n],
+    return new CBltgStake(txPrev->vout[txin.prevout.n],
                          txin.prevout,
                          pindexFrom);
 }

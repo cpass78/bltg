@@ -10,6 +10,7 @@
 
 #include "qt/guiutil.h"
 #include "clientmodel.h"
+#include "interfaces/handler.h"
 #include "optionsmodel.h"
 #include "networkstyle.h"
 #include "notificator.h"
@@ -235,7 +236,7 @@ BLTGGUI::~BLTGGUI()
 void BLTGGUI::handleRestart(QStringList args)
 {
     if (!ShutdownRequested())
-        Q_EMIT requestedRestart(args);
+            Q_EMIT requestedRestart(args);
 }
 
 
@@ -419,7 +420,7 @@ void BLTGGUI::message(const QString& title, const QString& message, unsigned int
         // Append title to "BLTG - "
         if (!msgType.isEmpty())
             strTitle += " - " + msgType;
-        notificator->notify((Notificator::Class) nNotifyIcon, strTitle, message);
+        notificator->notify(static_cast<Notificator::Class>(nNotifyIcon), strTitle, message);
     }
 }
 
@@ -650,15 +651,15 @@ void BLTGGUI::incomingTransaction(const QString& date, int unit, const CAmount& 
     if (!bdisableSystemnotifications) {
         // On new transaction, make an info balloon
         message((amount) < 0 ? (pwalletMain->fMultiSendNotify == true ? tr("Sent MultiSend transaction") : tr("Sent transaction")) : tr("Incoming transaction"),
-            tr("Date: %1\n"
-               "Amount: %2\n"
-               "Type: %3\n"
-               "Address: %4\n")
-                .arg(date)
-                .arg(BitcoinUnits::formatWithUnit(unit, amount, true))
-                .arg(type)
-                .arg(address),
-            CClientUIInterface::MSG_INFORMATION);
+                tr("Date: %1\n"
+                   "Amount: %2\n"
+                   "Type: %3\n"
+                   "Address: %4\n")
+                        .arg(date)
+                        .arg(BitcoinUnits::formatWithUnit(unit, amount, true))
+                        .arg(type)
+                        .arg(address),
+                CClientUIInterface::MSG_INFORMATION);
 
         pwalletMain->fMultiSendNotify = false;
     }
@@ -689,11 +690,11 @@ static bool ThreadSafeMessageBox(BLTGGUI* gui, const std::string& message, const
 void BLTGGUI::subscribeToCoreSignals()
 {
     // Connect signals to client
-    uiInterface.ThreadSafeMessageBox.connect(boost::bind(ThreadSafeMessageBox, this, _1, _2, _3));
+    m_handler_message_box = interfaces::MakeHandler(uiInterface.ThreadSafeMessageBox.connect(std::bind(ThreadSafeMessageBox, this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3)));
 }
 
 void BLTGGUI::unsubscribeFromCoreSignals()
 {
     // Disconnect signals from client
-    uiInterface.ThreadSafeMessageBox.disconnect(boost::bind(ThreadSafeMessageBox, this, _1, _2, _3));
+    m_handler_message_box->disconnect();
 }

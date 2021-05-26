@@ -103,6 +103,3 @@ void CMintPool::Remove(const uint256& hashPubcoin)
     nCountLastRemoved = it->second;
     erase(it);
 }
-
-
-

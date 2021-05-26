@@ -14,14 +14,14 @@
 #include <QSettings>
 
 WelcomeContentWidget::WelcomeContentWidget(QWidget *parent) :
-        QDialog(parent, Qt::FramelessWindowHint | Qt::WindowSystemMenuHint),
-        ui(new Ui::WelcomeContentWidget),
-        icConfirm1(new QPushButton()),
-        icConfirm2(new QPushButton()),
-        icConfirm3(new QPushButton()),
-        icConfirm4(new QPushButton()),
-        backButton(new QPushButton()),
-        nextButton(new QPushButton())
+    QDialog(parent, Qt::FramelessWindowHint | Qt::WindowSystemMenuHint),
+    ui(new Ui::WelcomeContentWidget),
+    icConfirm1(new QPushButton()),
+    icConfirm2(new QPushButton()),
+    icConfirm3(new QPushButton()),
+    icConfirm4(new QPushButton()),
+    backButton(new QPushButton()),
+    nextButton(new QPushButton())
 {
     ui->setupUi(this);
 
@@ -179,15 +179,15 @@ void WelcomeContentWidget::initLanguages()
     for (const QString& langStr : translations.entryList()) {
         QLocale locale(langStr);
 
-            /** check if the locale name consists of 2 parts (language_country) */
-            if (langStr.contains("_")) {
-                /** display language strings as "native language - native country (locale name)", e.g. "Deutsch - Deutschland (de)" */
-                ui->comboBoxLanguage->addItem(locale.nativeLanguageName() + QString(" - ") + locale.nativeCountryName() + QString(" (") + langStr + QString(")"), QVariant(langStr));
-            } else {
-                /** display language strings as "native language (locale name)", e.g. "Deutsch (de)" */
-                ui->comboBoxLanguage->addItem(locale.nativeLanguageName() + QString(" (") + langStr + QString(")"), QVariant(langStr));
-            }
+        /** check if the locale name consists of 2 parts (language_country) */
+        if (langStr.contains("_")) {
+            /** display language strings as "native language - native country (locale name)", e.g. "Deutsch - Deutschland (de)" */
+            ui->comboBoxLanguage->addItem(locale.nativeLanguageName() + QString(" - ") + locale.nativeCountryName() + QString(" (") + langStr + QString(")"), QVariant(langStr));
+        } else {
+            /** display language strings as "native language (locale name)", e.g. "Deutsch (de)" */
+            ui->comboBoxLanguage->addItem(locale.nativeLanguageName() + QString(" (") + langStr + QString(")"), QVariant(langStr));
         }
+    }
 }
 
 void WelcomeContentWidget::setModel(OptionsModel *model)

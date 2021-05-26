@@ -50,4 +50,4 @@ private:
 
 } // namespace interfaces
 
-#endif // BITCOIN_INTERFACES_WALLET_H
+#endif // BLTG_INTERFACES_WALLET_H

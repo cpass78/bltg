@@ -1047,7 +1047,7 @@ public:
         // Serialize the script
         if (nInput != nIn)
             // Blank out other inputs' signatures
-            ::Serialize(s, CScriptBase());
+            ::Serialize(s, CScript());
         else
             SerializeScriptCode(s);
         // Serialize the nSequence
@@ -1243,7 +1243,7 @@ uint256 SignatureHash(const CScript& scriptCode, const CTransaction& txTo, unsig
             // The prevout may already be contained in hashPrevout, and the nSequence
             // may already be contained in hashSequence.
             ss << txTo.vin[nIn].prevout;
-            ss << static_cast<const CScriptBase&>(scriptCode);
+            ss << scriptCode;
             ss << amount;
             ss << txTo.vin[nIn].nSequence;
         }
@@ -1338,6 +1338,38 @@ bool TransactionSignatureChecker::CheckLockTime(const CScriptNum& nLockTime) con
         return false;
 
     return true;
+}
+
+bool TransactionSignatureChecker::CheckColdStake(const CScript& prevoutScript) const
+{
+    // Transaction must be a coinstake tx
+    if (!txTo->IsCoinStake()) {
+        return false;
+    }
+    // There must be one single input
+    if (txTo->vin.size() != 1) {
+        return false;
+    }
+    // Since this is a coinstake, it has at least 2 outputs
+    const unsigned int outs = txTo->vout.size();
+    assert(outs >= 2);
+    // All outputs, except the first, and (for cold stakes with outs >=3) the last one,
+    // must have the same pubKeyScript, and it must match the script we are spending.
+    // If the coinstake has at least 3 outputs, the last one is left free, to be used for
+    // budget/masternode payments, and is checked in CheckColdstakeFreeOutput().
+    // Here we verify only that input amount goes to the non-free outputs.
+    CAmount outValue{0};
+    for (unsigned int i = 1; i < outs; i++) {
+        if (txTo->vout[i].scriptPubKey != prevoutScript) {
+            // Only the last one can be different (and only when outs >=3)
+            if (i != outs-1 || outs < 3) {
+                return false;
+            }
+        } else {
+            outValue += txTo->vout[i].nValue;
+        }
+    }
+    return outValue > amount;
 }
 
 

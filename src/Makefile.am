@@ -189,11 +189,12 @@ BITCOIN_CORE_H = \
   hash.h \
   httprpc.h \
   httpserver.h \
+  indirectmap.h \
   init.h \
-  interface/wallet.h \
+  interfaces/handler.h \
+  interfaces/wallet.h \
   invalid.h \
   invalid_outpoints.json.h \
-  invalid_serials.json.h \
   legacy/stakemodifier.h \
   kernel.h \
   key.h \
@@ -218,6 +219,7 @@ BITCOIN_CORE_H = \
   masternodeconfig.h \
   merkleblock.h \
   messagesigner.h \
+  blockassembler.h \
   miner.h \
   moneysupply.h \
   net.h \
@@ -326,6 +328,7 @@ libbitcoin_server_a_SOURCES = \
   legacy/validation_zerocoin_legacy.cpp \
   sapling/sapling_validation.cpp \
   merkleblock.cpp \
+  blockassembler.cpp \
   miner.cpp \
   net.cpp \
   net_processing.cpp \
@@ -373,7 +376,7 @@ libbitcoin_wallet_a_CXXFLAGS = $(AM_CXXFLAGS) $(PIE_FLAGS)
 libbitcoin_wallet_a_SOURCES = \
   activemasternode.cpp \
   bip38.cpp \
-  interface/wallet.cpp \
+  interfaces/wallet.cpp \
   addressbook.cpp \
   crypter.cpp \
   key_io.cpp \
@@ -400,7 +403,6 @@ libbitcoin_wallet_a_SOURCES = \
   destination_io.cpp \
   wallet/wallet.cpp \
   wallet/walletdb.cpp \
-  zbltg/deterministicmint.cpp \
   zbltg/zerocoin.cpp \
   zbltg/mintpool.cpp \
   stakeinput.cpp \
@@ -493,7 +495,6 @@ libbitcoin_common_a_SOURCES = \
   compressor.cpp \
   consensus/merkle.cpp \
   primitives/block.cpp \
-  zbltg/deterministicmint.cpp \
   primitives/transaction.cpp \
   zbltg/zerocoin.cpp \
   core_read.cpp \
@@ -533,6 +534,7 @@ libbitcoin_util_a_SOURCES = \
   compat/glibcxx_sanity.cpp \
   compat/strnlen.cpp \
   fs.cpp \
+  interfaces/handler.cpp \
   logging.cpp \
   random.cpp \
   rpc/protocol.cpp \

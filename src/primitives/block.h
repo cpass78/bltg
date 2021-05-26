@@ -24,7 +24,7 @@ class CBlockHeader
 {
 public:
     // header
-    static const int32_t CURRENT_VERSION=4;     //!> Version 3 supports CLTV activation
+    static const int32_t CURRENT_VERSION=4;
     int32_t nVersion;
     uint256 hashPrevBlock;
     uint256 hashMerkleRoot;
@@ -51,11 +51,11 @@ public:
         READWRITE(nNonce);
 
         //zerocoin active, header changes to include accumulator checksum
-        if(nVersion > 3 && nVersion < 7)
+        if(nVersion > 3 && nVersion < 4)
             READWRITE(nAccumulatorCheckpoint);
 
         // Sapling active
-        if (nVersion >= 8)
+        if (nVersion >= 4)
             READWRITE(hashFinalSaplingRoot);
     }
 
@@ -95,7 +95,7 @@ public:
     std::vector<unsigned char> vchBlockSig;
 
     // memory only
-    mutable bool fChecked;
+    mutable bool fChecked{false};
 
     CBlock()
     {
@@ -105,14 +105,14 @@ public:
     CBlock(const CBlockHeader &header)
     {
         SetNull();
-        *((CBlockHeader*)this) = header;
+        *(static_cast<CBlockHeader*>(this)) = header;
     }
 
     ADD_SERIALIZE_METHODS;
 
     template <typename Stream, typename Operation>
     inline void SerializationOp(Stream& s, Operation ser_action) {
-        READWRITE(*(CBlockHeader*)this);
+        READWRITE(*static_cast<CBlockHeader*>(this));
         READWRITE(vtx);
         if(vtx.size() > 1 && vtx[1]->IsCoinStake())
             READWRITE(vchBlockSig);

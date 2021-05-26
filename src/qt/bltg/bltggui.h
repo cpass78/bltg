@@ -27,6 +27,9 @@
 #include "qt/bltg/settings/settingsfaqwidget.h"
 #include "qt/rpcconsole.h"
 
+namespace interfaces {
+    class Handler;
+}
 
 class ClientModel;
 class NetworkStyle;
@@ -40,7 +43,7 @@ class WalletModel;
 */
 class BLTGGUI : public QMainWindow
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     static const QString DEFAULT_WALLET;
@@ -57,11 +60,11 @@ public:
     void resizeEvent(QResizeEvent *event) override;
     void showHide(bool show);
     int getNavWidth();
-    Q_SIGNALS:
-            void themeChanged(bool isLightTheme, QString& theme);
+Q_SIGNALS:
+    void themeChanged(bool isLightTheme, QString& theme);
     void windowResizeEvent(QResizeEvent* event);
 public Q_SLOTS:
-            void changeTheme(bool isLightTheme);
+    void changeTheme(bool isLightTheme);
     void goToDashboard();
     void goToSend();
     void goToReceive();
@@ -114,13 +117,15 @@ protected:
      */
 
 private:
+    // Handlers
+    std::unique_ptr<interfaces::Handler> m_handler_message_box;
+
     bool enableWallet;
     ClientModel* clientModel = nullptr;
 
     // Actions
     QAction* quitAction = nullptr;
     QAction* toggleHideAction = nullptr;
-
 
     // Frame
     NavMenuWidget *navMenu = nullptr;
@@ -163,12 +168,12 @@ private:
     void unsubscribeFromCoreSignals();
 
 public Q_SLOTS:
-            /** called by a timer to check if fRequestShutdown has been set **/
-            void detectShutdown();
+    /** called by a timer to check if fRequestShutdown has been set **/
+    void detectShutdown();
 
 private Q_SLOTS:
-            /** Show window if hidden, unminimize when minimized, rise when obscured or show if hidden and fToggleHidden is true */
-            void showNormalIfMinimized(bool fToggleHidden = false);
+    /** Show window if hidden, unminimize when minimized, rise when obscured or show if hidden and fToggleHidden is true */
+    void showNormalIfMinimized(bool fToggleHidden = false);
 
     /** Simply calls showNormalIfMinimized(true) for use in SLOT() macro */
     void toggleHidden();
@@ -181,9 +186,9 @@ private Q_SLOTS:
      void macosDockIconActivated();
 #endif
 
-    Q_SIGNALS:
-            /** Signal raised when a URI was entered or dragged to the GUI */
-            void receivedURI(const QString& uri);
+Q_SIGNALS:
+    /** Signal raised when a URI was entered or dragged to the GUI */
+    void receivedURI(const QString& uri);
     /** Restart handling */
     void requestedRestart(QStringList args);
 

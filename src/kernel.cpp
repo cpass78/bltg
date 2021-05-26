@@ -18,8 +18,6 @@
 #include "zbltgchain.h"
 #include "zbltg/zpos.h"
 
-#include <boost/assign/list_of.hpp>
-
 /**
  * CStakeKernel Constructor
  *
