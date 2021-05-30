@@ -21,7 +21,6 @@ public:
         MAIN,
         TESTNET,
         REGTEST,
-        UNITTEST,
 
         MAX_NETWORK_TYPES
     };
@@ -42,6 +41,11 @@ protected:
  * outside of the unit tests.
  */
 const CBaseChainParams& BaseParams();
+
+/**
+ * Return parameters for the given network.
+ */
+CBaseChainParams& BaseParams(CBaseChainParams::Network network);
 
 /** Sets the params returned by Params() to those for the given network. */
 void SelectBaseParams(CBaseChainParams::Network network);

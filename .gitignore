@@ -11,6 +11,7 @@ src/bltg
 src/bltgd
 src/bltg-cli
 src/bltg-tx
+src/bench/bench_bltg
 src/test/test_bltg
 src/qt/test/test_bltg-qt
 
@@ -88,6 +89,11 @@ bltg-qt
 BLTG-Qt.app
 background.tiff*
 
+# Rust
+.cargo/.configured-for-*
+.cargo/config
+target/
+
 # Unit-tests
 Makefile.test
 bltg-qt_test
@@ -132,3 +138,10 @@ libbitcoinconsensus.pc
 .idea
 CMakeLists.txt
 cmake-build-debug
+
+moc_*
+*.tmp
+ui_*
+build*
+bltgd.*
+bltgd-new-gui.*

@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file. See the AUTHORS file for names of contributors.
 
-#include "leveldb/db.h"
 #include "db/db_impl.h"
 #include "leveldb/cache.h"
+#include "leveldb/db.h"
 #include "util/testharness.h"
 #include "util/testutil.h"
 
@@ -12,11 +12,6 @@ namespace leveldb {
 
 class AutoCompactTest {
  public:
-  std::string dbname_;
-  Cache* tiny_cache_;
-  Options options_;
-  DB* db_;
-
   AutoCompactTest() {
     dbname_ = test::TmpDir() + "/autocompact_test";
     tiny_cache_ = NewLRUCache(100);
