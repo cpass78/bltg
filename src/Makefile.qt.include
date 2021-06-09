@@ -128,7 +128,7 @@ QT_MOC_CPP = \
   qt/bltg/moc_sendchangeaddressdialog.cpp \
   qt/bltg/moc_sendconfirmdialog.cpp \
   qt/bltg/moc_sendcustomfeedialog.cpp \
-  qt/bltg/moc_sendchangeaddressdialog.cpp \
+  qt/bltg/moc_sendmemodialog.cpp \
   qt/bltg/moc_sendmultirow.cpp \
   qt/bltg/moc_send.cpp \
   qt/bltg/moc_addnewaddressdialog.cpp \

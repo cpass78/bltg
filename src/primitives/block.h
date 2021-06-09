@@ -51,11 +51,11 @@ public:
         READWRITE(nNonce);
 
         //zerocoin active, header changes to include accumulator checksum
-        if(nVersion > 3 && nVersion < 4)
+        if(nVersion > 3 && nVersion < 5)
             READWRITE(nAccumulatorCheckpoint);
 
         // Sapling active
-        if (nVersion >= 4)
+        if (nVersion >= 5)
             READWRITE(hashFinalSaplingRoot);
     }
 
@@ -135,9 +135,9 @@ public:
         block.nTime          = nTime;
         block.nBits          = nBits;
         block.nNonce         = nNonce;
-        if(nVersion > 3 && nVersion < 7)
+        if(nVersion > 1 && nVersion < 5)
             block.nAccumulatorCheckpoint = nAccumulatorCheckpoint;
-        if (nVersion >= 8)
+        if (nVersion >= 5)
             block.hashFinalSaplingRoot   = hashFinalSaplingRoot;
         return block;
     }

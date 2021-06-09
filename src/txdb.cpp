@@ -308,9 +308,9 @@ bool CBlockTreeDB::LoadBlockIndexGuts(std::function<CBlockIndex*(const uint256&)
         std::pair<char, uint256> key;
         if (pcursor->GetKey(key) && key.first == DB_BLOCK_INDEX) {
             CDiskBlockIndex diskindex;
-            std::cout << key.first; //We get here
+//            std::cout << key.first; //We get here
             if (!pcursor->GetValue(diskindex)) {
-                std::cout << "fail";
+//                std::cout << "fail";
                 // Construct block index object
                 CBlockIndex* pindexNew = insertBlockIndex(diskindex.GetBlockHash());
                 pindexNew->pprev = insertBlockIndex(diskindex.hashPrev);
@@ -336,8 +336,8 @@ bool CBlockTreeDB::LoadBlockIndexGuts(std::function<CBlockIndex*(const uint256&)
                 pindexNew->nFlags = diskindex.nFlags;
                 pindexNew->vStakeModifier = diskindex.vStakeModifier;
 
-                std::cout << "DEBUG: \n";
-                std::cout << pindexNew->nSaplingValue;
+//                std::cout << "DEBUG: \n";
+//                std::cout << pindexNew->nSaplingValue;
 
                 if (!Params().GetConsensus().NetworkUpgradeActive(pindexNew->nHeight, Consensus::UPGRADE_POS)) {
                     if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits))

@@ -496,11 +496,11 @@ int32_t ComputeBlockVersion(const Consensus::Params& consensus, int nHeight)
     if (NetworkUpgradeActive(nHeight, consensus, Consensus::UPGRADE_V5_0)) {
         return CBlockHeader::CURRENT_VERSION;    // v9
     } else if (consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_V4_0)) {
-        return 7;
+        return 4;
     } else if (consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_V3_4)) {
-        return 6;
+        return 4;
     } else if (consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_BIP65)) {
-        return 5;
+        return 4;
     } else if (consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_ZC)) {
         return 4;
     } else {

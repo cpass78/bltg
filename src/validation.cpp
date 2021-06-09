@@ -2870,10 +2870,10 @@ bool ContextualCheckBlockHeader(const CBlockHeader& block, CValidationState& sta
     // Reject outdated version blocks
     if ((block.nVersion < 3 && nHeight >= 1) ||
         (block.nVersion < 4 && consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_ZC)) ||
-        (block.nVersion < 5 && consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_BIP65)) ||
-        (block.nVersion < 6 && consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_V3_4)) ||
-        (block.nVersion < 7 && consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_V4_0)) ||
-        (block.nVersion < 8 && consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_V5_0)))
+        (block.nVersion < 4 && consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_BIP65)) ||
+        (block.nVersion < 4 && consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_V3_4)) ||
+        (block.nVersion < 4 && consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_V4_0)) ||
+        (block.nVersion < 4 && consensus.NetworkUpgradeActive(nHeight, Consensus::UPGRADE_V5_0)))
     {
         std::string stringErr = strprintf("rejected block version %d at height %d", block.nVersion, nHeight);
         return state.Invalid(false, REJECT_OBSOLETE, "bad-version", stringErr);
@@ -2927,13 +2927,13 @@ bool ContextualCheckBlock(const CBlock& block, CValidationState& state, CBlockIn
     }
 //HERE
     // Enforce block.nVersion=2 rule that the coinbase starts with serialized block height
-    if (pindexPrev) { // pindexPrev is only null on the first block which is a version 1 block.
-        CScript expect = CScript() << nHeight;
-        if (block.vtx[0]->vin[0].scriptSig.size() < expect.size() ||
-            !std::equal(expect.begin(), expect.end(), block.vtx[0]->vin[0].scriptSig.begin())) {
-            return state.DoS(100, false, REJECT_INVALID, "bad-cb-height", false, "block height mismatch in coinbase");
-        }
-    }
+//    if (block.nVersion >= 2) { // pindexPrev is only null on the first block which is a version 1 block.
+//        CScript expect = CScript() << nHeight;
+//        if (block.vtx[0]->vin[0].scriptSig.size() < expect.size() ||
+//            !std::equal(expect.begin(), expect.end(), block.vtx[0]->vin[0].scriptSig.begin())) {
+//            return state.DoS(100, false, REJECT_INVALID, "bad-cb-height", false, "block height mismatch in coinbase");
+//        }
+//    }
 
     return true;
 }

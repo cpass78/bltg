@@ -348,7 +348,7 @@ bool CMasternodeBroadcast::CheckSignature() const
 {
     std::string strError = "";
     std::string strMessage = (
-                            nMessVersion == MessageVersion::MESS_VER_HASH ?
+                            nMessVersion == MessageVersion::MESS_VER_HASH ? //BLTG mn msg failing here.
                             GetSignatureHash().GetHex() :
                             GetStrMessage()
                             );

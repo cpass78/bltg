@@ -590,8 +590,8 @@ void CoinControlDialog::updateLabels()
         return;
 
     ui->labelTitle->setText(fSelectTransparent ?
-            "Select PIV Outputs to Spend" :
-            "Select Shielded PIV to Spend");
+            "Select BLTG Outputs to Spend" :
+            "Select Shielded BLTG to Spend");
 
     const TotalAmounts& t = getTotals();
 

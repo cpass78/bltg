@@ -1032,7 +1032,7 @@ UniValue getblockchaininfo(const JSONRPCRequest& request)
     obj.pushKV("shield_pool_value", pChainTip ? ValuePoolDesc(pChainTip->nChainSaplingValue, pChainTip->nSaplingValue) : 0);
     obj.pushKV("initial_block_downloading", IsInitialBlockDownload());
     UniValue softforks(UniValue::VARR);
-    softforks.push_back(SoftForkDesc("bip65", 5, pChainTip));
+    softforks.push_back(SoftForkDesc("bip65", 4, pChainTip));
     obj.pushKV("softforks",             softforks);
     UniValue upgrades(UniValue::VOBJ);
     for (int i = Consensus::BASE_NETWORK + 1; i < (int) Consensus::MAX_NETWORK_UPGRADES; i++) {

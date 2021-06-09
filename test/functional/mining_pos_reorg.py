@@ -53,7 +53,7 @@ class ReorgStakeTest(BltgTestFramework):
 
     def check_money_supply(self, expected_piv, expected_zpiv):
         g_info = [self.nodes[i].getinfo() for i in range(self.num_nodes)]
-        # verify that nodes have the expected PIV and zPIV supply
+        # verify that nodes have the expected BLTG and zPIV supply
         for node in g_info:
             assert_equal(node['moneysupply'], DecimalAmt(expected_piv))
             for denom in node['zPIVsupply']:
@@ -68,7 +68,7 @@ class ReorgStakeTest(BltgTestFramework):
                     return True, x
             return False, None
 
-        # Check PIV and zPIV supply at the beginning
+        # Check BLTG and zPIV supply at the beginning
         # ------------------------------------------
         # zPIV supply: 2 coins for each denomination
         expected_zpiv_supply = {
@@ -82,7 +82,7 @@ class ReorgStakeTest(BltgTestFramework):
             "5000": 10000,
             "total": 13332,
         }
-        # PIV supply: block rewards minus burned fees for minting
+        # BLTG supply: block rewards minus burned fees for minting
         expected_money_supply = 250.0 * 330 - 16 * 0.01
         self.check_money_supply(expected_money_supply, expected_zpiv_supply)
 
@@ -230,8 +230,8 @@ class ReorgStakeTest(BltgTestFramework):
         res, utxo = findUtxoInList(stakeinput["txid"], stakeinput["vout"], self.nodes[0].listunspent())
         assert (not res or not utxo["spendable"])
 
-        # Verify that PIV and zPIV supplies were properly updated after the spends and reorgs
-        self.log.info("Check PIV and zPIV supply...")
+        # Verify that BLTG and zPIV supplies were properly updated after the spends and reorgs
+        self.log.info("Check BLTG and zPIV supply...")
         expected_money_supply += 250.0 * (self.nodes[1].getblockcount() - 330)
         spent_coin_0 = mints[0]["denomination"]
         spent_coin_1 = mints[1]["denomination"]
