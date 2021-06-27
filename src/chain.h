@@ -180,7 +180,10 @@ public:
     const uint256* phashBlock{nullptr};
 
     //! pointer to the index of the predecessor of this block
-    CBlockIndex* pprev{nullptr};
+    CBlockIndex* pprev{nullptr}; //HERE
+
+    //! pointer to the index of the next block
+    CBlockIndex* pnext{nullptr};
 
     //! pointer to the index of some further predecessor of this block
     CBlockIndex* pskip{nullptr};
@@ -217,7 +220,13 @@ public:
     // Modifier V1 is 64 bit while modifier V2 is 256 bit.
     std::vector<unsigned char> vStakeModifier{};
     unsigned int nFlags{0};
-
+    int64_t nMint;
+    int64_t nMoneySupply;
+    uint64_t nStakeModifier;             // hash modifier for proof-of-stake
+    uint256 nStakeModifierV2;
+    COutPoint prevoutStake;
+    unsigned int nStakeTime;
+    uint256 hashProofOfStake;
     //! Change in value held by the Sapling circuit over this block.
     //! Not a Optional because this was added before Sapling activated, so we can
     //! rely on the invariant that every block before this was added had nSaplingValue = 0.
@@ -238,6 +247,10 @@ public:
 
     //! (memory only) Sequential id assigned to distinguish order in which blocks are received.
     uint32_t nSequenceId{0};
+
+    //! zerocoin specific fields
+    std::map<libzerocoin::CoinDenomination, int64_t> mapZerocoinSupply;
+    std::vector<libzerocoin::CoinDenomination> vMintDenominationsInBlock;
 
     CBlockIndex() {}
     CBlockIndex(const CBlock& block);
@@ -290,13 +303,14 @@ const CBlockIndex* LastCommonAncestor(const CBlockIndex* pa, const CBlockIndex* 
 /** Used to marshal pointers into hashes for db storage. */
 
 // New serialization introduced with 4.0.99
-static const int DBI_OLD_SER_VERSION = 4009900;
-static const int DBI_SER_VERSION_NO_ZC = 4009902;   // removes mapZerocoinSupply, nMoneySupply
+static const int DBI_OLD_SER_VERSION = 3010100;
+static const int DBI_SER_VERSION_NO_ZC = 4000000;   // removes mapZerocoinSupply, nMoneySupply
 
 class CDiskBlockIndex : public CBlockIndex
 {
 public:
     uint256 hashPrev;
+    uint256 hashNext;
 
     CDiskBlockIndex()
     {

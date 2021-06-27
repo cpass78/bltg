@@ -31,8 +31,8 @@ public:
     uint32_t nTime;
     uint32_t nBits;
     uint32_t nNonce;
-    uint256 nAccumulatorCheckpoint;             // only for version 4, 5 and 6.
-    uint256 hashFinalSaplingRoot;               // only for version 8
+    uint256 nAccumulatorCheckpoint;             // only for version 3, 4.
+    uint256 hashFinalSaplingRoot;               // only for version 5
 
     CBlockHeader()
     {
@@ -135,7 +135,7 @@ public:
         block.nTime          = nTime;
         block.nBits          = nBits;
         block.nNonce         = nNonce;
-        if(nVersion > 1 && nVersion < 5)
+        if(nVersion > 3 && nVersion < 5)
             block.nAccumulatorCheckpoint = nAccumulatorCheckpoint;
         if (nVersion >= 5)
             block.hashFinalSaplingRoot   = hashFinalSaplingRoot;

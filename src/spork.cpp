@@ -17,6 +17,8 @@
 #define MAKE_SPORK_DEF(name, defaultValue) CSporkDef(name, defaultValue, #name)
 
 std::vector<CSporkDef> sporkDefs = {
+    MAKE_SPORK_DEF(SPORK_2_SWIFTTX,                         4070908800ULL), // OFF
+    MAKE_SPORK_DEF(SPORK_3_SWIFTTX_BLOCK_FILTERING,         4070908800ULL), // OFF
     MAKE_SPORK_DEF(SPORK_5_MAX_VALUE,                       1000),          // 1000 BLTG
     MAKE_SPORK_DEF(SPORK_8_MASTERNODE_PAYMENT_ENFORCEMENT,  4070908800ULL), // OFF
     MAKE_SPORK_DEF(SPORK_9_MASTERNODE_BUDGET_ENFORCEMENT,   4070908800ULL), // OFF
@@ -60,12 +62,12 @@ void CSporkManager::LoadSporksFromDB()
         // TODO: Temporary workaround for v5.0 clients to ensure up-to-date protocol version spork
         if (spork.nSporkID == SPORK_15_NEW_PROTOCOL_ENFORCEMENT_2) {
             LogPrintf("%s : Spork 15 signed at %d\n", __func__, spork.nTimeSigned);
-            // 1578338986 is the timestamp that spork 15 was last signed at for mainnet for the previous
+            // 1525737600 is the timestamp that spork 15 was last signed at for mainnet for the previous
             // protocol bump. If the timestamp in the DB is equal or lower than this, we know that
             // the value is stale and should ignore it to prevent un-necessary disconnections in the
             // version handshake process. This value is also suitable for testnet as the timestamp
             // for this spork on that network was signed shortly after this.
-            if (spork.nTimeSigned <= 1578338986 ) {
+            if (spork.nTimeSigned <= 1525737600 ) {
                 LogPrintf("%s : Stale spork 15 detected, clearing...\n", __func__);
                 CSporkManager::Clear();
                 return;
@@ -125,7 +127,7 @@ int CSporkManager::ProcessSporkMsg(CSporkMessage& spork)
     }
 
     // reject old signature version
-    if (spork.nMessVersion != MessageVersion::MESS_VER_HASH) {
+    if (spork.nMessVersion != MessageVersion::MESS_VER_STRMESS) {
         LogPrint(BCLog::SPORKS, "%s : nMessVersion=%d not accepted anymore\n", __func__, spork.nMessVersion);
         return 0;
     }
@@ -156,6 +158,8 @@ int CSporkManager::ProcessSporkMsg(CSporkMessage& spork)
     const bool fRequireNew = spork.nTimeSigned >= Params().GetConsensus().nTime_EnforceNewSporkKey;
     bool fValidSig = spork.CheckSignature(spork.GetPublicKey().GetID());
     if (!fValidSig && !fRequireNew) {
+
+//        std::cout << "Debug" << "!fValidSig && !fRequireNew \n";
         // See if window is open that allows for old spork key to sign messages
         if (GetAdjustedTime() < Params().GetConsensus().nTime_RejectOldSporkKey) {
             CPubKey pubkeyold = spork.GetPublicKeyOld();

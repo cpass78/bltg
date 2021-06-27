@@ -308,12 +308,11 @@ bool CBlockTreeDB::LoadBlockIndexGuts(std::function<CBlockIndex*(const uint256&)
         std::pair<char, uint256> key;
         if (pcursor->GetKey(key) && key.first == DB_BLOCK_INDEX) {
             CDiskBlockIndex diskindex;
-//            std::cout << key.first; //We get here
-            if (!pcursor->GetValue(diskindex)) {
-//                std::cout << "fail";
+            if (pcursor->GetValue(diskindex)) {
                 // Construct block index object
                 CBlockIndex* pindexNew = insertBlockIndex(diskindex.GetBlockHash());
                 pindexNew->pprev = insertBlockIndex(diskindex.hashPrev);
+                pindexNew->pnext = insertBlockIndex(diskindex.hashNext); //HERE only < v5
                 pindexNew->nHeight = diskindex.nHeight;
                 pindexNew->nFile = diskindex.nFile;
                 pindexNew->nDataPos = diskindex.nDataPos;
@@ -325,20 +324,31 @@ bool CBlockTreeDB::LoadBlockIndexGuts(std::function<CBlockIndex*(const uint256&)
                 pindexNew->nNonce = diskindex.nNonce;
                 pindexNew->nStatus = diskindex.nStatus;
                 pindexNew->nTx = diskindex.nTx;
+
                 // sapling
                 pindexNew->nSaplingValue  = diskindex.nSaplingValue;
                 pindexNew->hashFinalSaplingRoot = diskindex.hashFinalSaplingRoot;
 
                 //zerocoin
                 pindexNew->nAccumulatorCheckpoint = diskindex.nAccumulatorCheckpoint;
+                pindexNew->mapZerocoinSupply = diskindex.mapZerocoinSupply; //HERE only < v5
+                pindexNew->vMintDenominationsInBlock = diskindex.vMintDenominationsInBlock; //HERE only < v5
 
                 //Proof Of Stake
+                pindexNew->nMint = diskindex.nMint; //HERE
+                pindexNew->nMoneySupply = diskindex.nMoneySupply; //HERE only < v5
                 pindexNew->nFlags = diskindex.nFlags;
                 pindexNew->vStakeModifier = diskindex.vStakeModifier;
-
-//                std::cout << "DEBUG: \n";
-//                std::cout << pindexNew->nSaplingValue;
-
+//HERE Between blocks should be removed for upgrade to 4.0.0 v5
+                if (!Params().GetConsensus().NetworkUpgradeActive(pindexNew->nHeight, Consensus::UPGRADE_V3_4)) {
+                    pindexNew->nStakeModifier = diskindex.nStakeModifier;
+                } else {
+                    pindexNew->nStakeModifierV2 = diskindex.nStakeModifierV2;
+                }
+                pindexNew->prevoutStake = diskindex.prevoutStake;
+                pindexNew->nStakeTime = diskindex.nStakeTime;
+                pindexNew->hashProofOfStake = diskindex.hashProofOfStake;
+//HERE ^
                 if (!Params().GetConsensus().NetworkUpgradeActive(pindexNew->nHeight, Consensus::UPGRADE_POS)) {
                     if (!CheckProofOfWork(pindexNew->GetBlockHash(), pindexNew->nBits))
                         return error("LoadBlockIndex() : CheckProofOfWork failed: %s", pindexNew->ToString());

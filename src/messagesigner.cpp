@@ -10,7 +10,7 @@
 #include "util.h"
 #include "utilstrencodings.h"
 
-const std::string strMessageMagic = "BLTG Signed Message:\n";
+const std::string strMessageMagic = "DarkNet Signed Message:\n";
 
 bool CMessageSigner::GetKeysFromSecret(const std::string& strSecret, CKey& keyRet, CPubKey& pubkeyRet)
 {
@@ -79,7 +79,7 @@ bool CHashSigner::VerifyHash(const uint256& hash, const CKeyID& keyID, const std
 
 bool CSignedMessage::Sign(const CKey& key, const CKeyID& keyID)
 {
-    nMessVersion = MessageVersion::MESS_VER_HASH;
+    nMessVersion = MessageVersion::MESS_VER_STRMESS;
     std::string strError = "";
     uint256 hash = GetSignatureHash();
 
@@ -110,13 +110,14 @@ bool CSignedMessage::CheckSignature(const CKeyID& keyID) const
 {
     std::string strError = "";
 
-    if (nMessVersion == MessageVersion::MESS_VER_HASH) {
-        uint256 hash = GetSignatureHash();
-        return CHashSigner::VerifyHash(hash, keyID, vchSig, strError);
+    if (nMessVersion == MessageVersion::MESS_VER_STRMESS) {
+        std::string strMessage = GetStrMessage();
+        return CMessageSigner::VerifyMessage(keyID, vchSig, strMessage, strError);
     }
 
-    std::string strMessage = GetStrMessage();
-    return CMessageSigner::VerifyMessage(keyID, vchSig, strMessage, strError);
+    uint256 hash = GetSignatureHash();
+    return CHashSigner::VerifyHash(hash, keyID, vchSig, strError);
+
 }
 
 std::string CSignedMessage::GetSignatureBase64() const

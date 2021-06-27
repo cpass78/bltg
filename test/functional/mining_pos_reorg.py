@@ -56,8 +56,8 @@ class ReorgStakeTest(BltgTestFramework):
         # verify that nodes have the expected BLTG and zPIV supply
         for node in g_info:
             assert_equal(node['moneysupply'], DecimalAmt(expected_piv))
-            for denom in node['zPIVsupply']:
-                assert_equal(node['zPIVsupply'][denom], DecimalAmt(expected_zpiv[denom]))
+            for denom in node['zBLTGsupply']:
+                assert_equal(node['zBLTGsupply'][denom], DecimalAmt(expected_zpiv[denom]))
 
 
     def run_test(self):

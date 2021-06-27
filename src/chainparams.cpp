@@ -149,9 +149,9 @@ public:
 
         // spork keys
         consensus.strSporkPubKey = "04300c047237e28c6361264532ca825f409babc06f49eadca1540ea15bba9b10710dfdaf1884029d0066381dc6dded497093c7722bde5992ddb76604882514155d";
-        consensus.strSporkPubKeyOld = "04300c047237e28c6361264532ca825f409babc06f49eadca1540ea15bba9b10710dfdaf1884029d0066381dc6dded497093c7722bde5992ddb76604882514155d";
-        consensus.nTime_EnforceNewSporkKey = 1566860400;    //!> August 26, 2019 11:00:00 PM GMT
-        consensus.nTime_RejectOldSporkKey = 1569538800;     //!> September 26, 2019 11:00:00 PM GMT
+        consensus.strSporkPubKeyOld = "";
+        consensus.nTime_EnforceNewSporkKey = 1525158000;    //!> August 26, 2019 11:00:00 PM GMT
+        consensus.nTime_RejectOldSporkKey = 1527811200;     //!> September 26, 2019 11:00:00 PM GMT
 
         // height-based activations
         consensus.height_last_invalid_UTXO = 894538;
@@ -181,7 +181,7 @@ public:
         consensus.vUpgrades[Consensus::BASE_NETWORK].nActivationHeight = Consensus::NetworkUpgrade::ALWAYS_ACTIVE;
         consensus.vUpgrades[Consensus::UPGRADE_TESTDUMMY].nActivationHeight = Consensus::NetworkUpgrade::NO_ACTIVATION_HEIGHT;
         consensus.vUpgrades[Consensus::UPGRADE_POS].nActivationHeight           = 301;
-        consensus.vUpgrades[Consensus::UPGRADE_POS_V2].nActivationHeight        = Consensus::NetworkUpgrade::NO_ACTIVATION_HEIGHT;
+        consensus.vUpgrades[Consensus::UPGRADE_POS_V2].nActivationHeight        = 699000;
         consensus.vUpgrades[Consensus::UPGRADE_ZC].nActivationHeight            = Consensus::NetworkUpgrade::NO_ACTIVATION_HEIGHT;
         consensus.vUpgrades[Consensus::UPGRADE_ZC_V2].nActivationHeight         = Consensus::NetworkUpgrade::NO_ACTIVATION_HEIGHT;
         consensus.vUpgrades[Consensus::UPGRADE_BIP65].nActivationHeight         = 699000;

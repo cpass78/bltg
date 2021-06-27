@@ -317,7 +317,7 @@ bool CMasternodeBroadcast::Create(const CTxIn& txin,
 bool CMasternodeBroadcast::Sign(const CKey& key, const CPubKey& pubKey)
 {
     std::string strError = "";
-    nMessVersion = MessageVersion::MESS_VER_HASH;
+    nMessVersion = MessageVersion::MESS_VER_STRMESS;
     const std::string strMessage = GetSignatureHash().GetHex();
 
     if (!CMessageSigner::SignMessage(strMessage, vchSig, key)) {
@@ -348,9 +348,9 @@ bool CMasternodeBroadcast::CheckSignature() const
 {
     std::string strError = "";
     std::string strMessage = (
-                            nMessVersion == MessageVersion::MESS_VER_HASH ? //BLTG mn msg failing here.
-                            GetSignatureHash().GetHex() :
-                            GetStrMessage()
+                            nMessVersion == MessageVersion::MESS_VER_STRMESS ? //BLTG mn msg failing here.
+                            GetStrMessage() :
+                            GetSignatureHash().GetHex()
                             );
 
     if(!CMessageSigner::VerifyMessage(pubKeyCollateralAddress, vchSig, strMessage, strError))
@@ -559,7 +559,7 @@ uint256 CMasternodePing::GetHash() const
 {
     CHashWriter ss(SER_GETHASH, PROTOCOL_VERSION);
     ss << vin;
-    if (nMessVersion == MessageVersion::MESS_VER_HASH) ss << blockHash;
+    if (nMessVersion == MessageVersion::MESS_VER_STRMESS) ss << blockHash;
     ss << sigTime;
     return ss.GetHash();
 }

@@ -293,7 +293,6 @@ BITCOIN_CORE_H = \
   wallet/walletdb.h \
   warnings.h \
   zbltgchain.h \
-  zbltg/deterministicmint.h \
   zbltg/mintpool.h \
   zbltg/zerocoin.h \
   zbltg/zpos.h \

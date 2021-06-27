@@ -58,7 +58,7 @@ public:
 
     CSignedMessage() :
         vchSig(),
-        nMessVersion(MessageVersion::MESS_VER_HASH)
+        nMessVersion(MessageVersion::MESS_VER_STRMESS)
     {}
     virtual ~CSignedMessage() {};
 

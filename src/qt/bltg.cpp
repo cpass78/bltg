@@ -155,7 +155,7 @@ void DebugMessageHandler(QtMsgType type, const QMessageLogContext& context, cons
  */
 class BitcoinCore : public QObject
 {
-Q_OBJECT
+    Q_OBJECT
 public:
     explicit BitcoinCore();
 
@@ -180,7 +180,7 @@ private:
 /** Main BLTG application object */
 class BitcoinApplication : public QApplication
 {
-Q_OBJECT
+    Q_OBJECT
 public:
     explicit BitcoinApplication(int& argc, char** argv);
     ~BitcoinApplication();

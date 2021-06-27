@@ -123,6 +123,7 @@ SET(QT_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/bltg/furabstractlistitemdelegate.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/bltg/txviewholder.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/bltg/qtutils.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/bltg/balancebubble.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/bltg/expandablebutton.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/bltg/topbar.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/bltg/txrow.cpp
@@ -141,7 +142,7 @@ SET(QT_SOURCES
         ${CMAKE_CURRENT_SOURCE_DIR}/bltg/sendchangeaddressdialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/bltg/sendconfirmdialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/bltg/sendcustomfeedialog.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/bltg/sendchangeaddressdialog.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/bltg/sendmemodialog.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/bltg/sendmultirow.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/bltg/send.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/bltg/addnewaddressdialog.cpp
@@ -221,7 +222,7 @@ target_include_directories(bltg-qt PUBLIC ${ENDIAN_INCLUDES})
 target_link_libraries(bltg-qt
         qt_stuff
         univalue
-        SERVER_A UTIL_A WALLET_A CLI_A COMMON_A BITCOIN_CRYPTO_A ZEROCOIN_A SAPLING_A
+        SERVER_A WALLET_A COMMON_A ZEROCOIN_A UTIL_A SAPLING_A BITCOIN_CRYPTO_A CLI_A
         leveldb crc32c secp256k1 rustzcash
         ${BerkeleyDB_LIBRARIES} ${OPENSSL_LIBRARIES} ${Boost_LIBRARIES} ${PROTOBUF_LIBRARIES} ${LIBEVENT_LIB}
         ${sodium_LIBRARY_RELEASE}
